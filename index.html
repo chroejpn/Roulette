@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ルーレット - プロファイル機能付き</title>
+    <!-- CSSファイルを読み込む -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <div class="container">
+        <!-- プロファイル管理エリア -->
+        <div class="profile-manager">
+            <h3>プロファイルの保存・読み込み</h3>
+            <select id="profileSelect">
+                <option value="">-- 保存済みから選択 --</option>
+            </select>
+            <button id="loadBtn">読み込む</button>
+            <button id="deleteBtn" class="delete">削除</button>
+            <br>
+            <input type="text" id="profileName" placeholder="新しいプロファイル名">
+            <button id="saveBtn">現在の項目を保存</button>
+        </div>
+
+        <!-- ルーレットと項目編集エリア -->
+        <div class="controls">
+            <h3>項目の編集（改行で区切る）</h3>
+            <textarea id="itemInput" rows="6">大吉&#10;中吉&#10;小吉&#10;吉&#10;凶</textarea>
+            <br>
+            <button id="updateBtn">ルーレットを更新</button>
+        </div>
+
+        <div>
+            <canvas id="roulette" width="300" height="300"></canvas>
+            <br>
+            <!-- 直接書いていたスタイル（style="..."）をCSSクラスに変更しています -->
+            <button id="spinBtn" class="spin-btn">回す！</button>
+            <div id="result"></div>
+        </div>
+    </div>
+
+    <!-- JavaScriptファイルを読み込む（画面の要素が読み込まれた後に実行するため一番下に配置） -->
+    <script src="script.js"></script>
+</body>
+</html>
