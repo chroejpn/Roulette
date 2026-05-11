@@ -11,10 +11,16 @@
 </head>
 <body>
     
+    <div style="text-align: right; width: 80%; max-width: 500px; margin: 0 auto 10px;">
+        <select id="langSelect" style="padding: 5px; border-radius: 4px;">
+            <option value="ja">日本語</option>
+            <option value="en">English</option>
+        </select>
+    </div>
+
     <div class="container">
-        <!-- プロファイル管理エリア -->
         <div class="profile-manager">
-            <h3>プロファイルの保存・読み込み</h3>
+            <h3 id="titleProfile">プロファイルの保存・読み込み</h3>
             <select id="profileSelect">
                 <option value="">-- 保存済みから選択 --</option>
             </select>
@@ -25,11 +31,10 @@
             <button id="saveBtn">現在の項目を保存</button>
         </div>
 
-        <!-- ルーレットと項目編集エリア -->
         <div class="controls">
-            <h3>項目の編集</h3>
-            <p style="font-size: 12px; color: #666; margin: 0;">「項目名:割合」で重みを設定できます（例: A:1）<br>改行で区切ってください．</p>
-            <textarea id="itemInput" rows="6">A:1&#10;B:2&#10;C:3&#10;D（割合なしは1）</textarea>
+            <h3 id="titleEdit">項目の編集</h3>
+            <p id="descEdit" style="font-size: 12px; color: #666; margin: 0;">「項目名:割合」で重みを設定できます（例: A:1）<br>改行で区切ってください．</p>
+            <textarea id="itemInput" rows="6">A:1&#10;B:2&#10;C:3&#10;D:1</textarea>
             <br>
             <button id="updateBtn">ルーレットを更新</button>
         </div>
@@ -37,13 +42,11 @@
         <div>
             <canvas id="roulette" width="300" height="300"></canvas>
             <br>
-            <!-- 直接書いていたスタイル（style="..."）をCSSクラスに変更しています -->
             <button id="spinBtn" class="spin-btn">回す！</button>
             <div id="result"></div>
         </div>
     </div>
 
-    <!-- JavaScriptファイルを読み込む（画面の要素が読み込まれた後に実行するため一番下に配置） -->
     <script src="script.js"></script>
 </body>
 </html>
