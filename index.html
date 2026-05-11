@@ -27,8 +27,9 @@
 
         <!-- ルーレットと項目編集エリア -->
         <div class="controls">
-            <h3>項目の編集（改行で区切る）</h3>
-            <textarea id="itemInput" rows="6">大吉&#10;中吉&#10;小吉&#10;吉&#10;凶</textarea>
+            <h3>項目の編集</h3>
+            <p style="font-size: 12px; color: #666; margin: 0;">「項目名:割合」で重みを設定できます（例: A:1）<br>改行で区切ってください．</p>
+            <textarea id="itemInput" rows="6">A:1&#10;B:2&#10;C:3&#10;D（割合なしは1）</textarea>
             <br>
             <button id="updateBtn">ルーレットを更新</button>
         </div>
