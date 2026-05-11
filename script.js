@@ -1,9 +1,11 @@
 const canvas = document.getElementById('roulette');
 const ctx = canvas.getContext('2d');
 
-let items = [];
+// itemsをオブジェクトの配列に変更（text: 項目名, weight: 重み）
+let itemsData = []; 
+let totalWeight = 0;
+
 let startAngle = 0;
-let arc = 0;
 let spinTimeout = null;
 let spinAngleStart = 10;
 let spinTime = 0;
@@ -81,39 +83,72 @@ document.getElementById('deleteBtn').addEventListener('click', () => {
 // --- ルーレット描画・回転処理 ---
 function updateRouletteItems() {
     const text = document.getElementById('itemInput').value;
-    items = text.split('\n').filter(i => i.trim() !== '');
-    if(items.length === 0) items = ["項目なし"];
-    arc = Math.PI * 2 / items.length;
+    const lines = text.split('\n').filter(i => i.trim() !== '');
+    
+    itemsData = [];
+    totalWeight = 0;
+
+    if(lines.length === 0) {
+        itemsData = [{ text: "項目なし", weight: 1 }];
+        totalWeight = 1;
+    } else {
+        lines.forEach(line => {
+            // 半角コロンまたは全角コロンで分割
+            let parts = line.split(/[:：]/);
+            let name = parts[0].trim();
+            let weight = 1; // デフォルトの割合は1
+
+            if (parts.length > 1) {
+                let parsedWeight = parseFloat(parts[1]);
+                // 数字として正しい，かつ0より大きい場合のみ重みを適用
+                if (!isNaN(parsedWeight) && parsedWeight > 0) {
+                    weight = parsedWeight;
+                }
+            }
+            itemsData.push({ text: name, weight: weight });
+            totalWeight += weight;
+        });
+    }
     drawRouletteWheel();
 }
 
 function drawRouletteWheel() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
-    // --- 追加：区切り線の色と太さを設定 ---
-    ctx.strokeStyle = "#333"; // 区切り線の色（黒に近いグレー）
-    ctx.lineWidth = 1;        // 区切り線の太さ
-    // ------------------------------------
+    ctx.strokeStyle = "#333";
+    ctx.lineWidth = 1;
 
-    for(let i = 0; i < items.length; i++) {
-        const angle = startAngle + i * arc;
-        ctx.fillStyle = `hsl(${i * 360 / items.length}, 70%, 80%)`;
+    let currentAngle = startAngle;
+
+    for(let i = 0; i < itemsData.length; i++) {
+        const item = itemsData[i];
+        // 割合に応じた角度（弧）を計算
+        const itemArc = (Math.PI * 2) * (item.weight / totalWeight);
+        
+        ctx.fillStyle = `hsl(${i * 360 / itemsData.length}, 70%, 80%)`;
         
         ctx.beginPath();
-        ctx.arc(150, 150, 150, angle, angle + arc, false);
+        ctx.arc(150, 150, 150, currentAngle, currentAngle + itemArc, false);
         ctx.lineTo(150, 150);
         ctx.fill();
-        ctx.stroke(); // ← 追加：ここで線を描画します
+        ctx.stroke();
         
         ctx.save();
         ctx.fillStyle = "black";
-        ctx.translate(150 + Math.cos(angle + arc / 2) * 100, 
-                      150 + Math.sin(angle + arc / 2) * 100);
-        ctx.rotate(angle + arc / 2 + Math.PI / 2);
-        const text = items[i];
+        // 文字の配置角度を，その項目の中心に合わせる
+        const textAngle = currentAngle + itemArc / 2;
+        ctx.translate(150 + Math.cos(textAngle) * 100, 
+                      150 + Math.sin(textAngle) * 100);
+        ctx.rotate(textAngle + Math.PI / 2);
+        
+        // テキストを描画（長すぎる場合は割合の数字も入っているので名前だけにする等も可）
+        const text = item.text;
         ctx.font = "16px sans-serif";
         ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
         ctx.restore();
+
+        // 次の項目の描画開始位置を更新
+        currentAngle += itemArc;
     }
     
     // ポインター
@@ -139,16 +174,31 @@ function rotateWheel() {
 
 function stopRotateWheel() {
     cancelAnimationFrame(spinTimeout);
-    let relativeAngle = (1.5 * Math.PI - startAngle) % (2 * Math.PI);
-    if (relativeAngle < 0) relativeAngle += 2 * Math.PI;
-    const index = Math.floor(relativeAngle / arc);
-    document.getElementById('result').innerText = "結果: " + items[index];
+    
+    // ポインターの位置（真上＝1.5 * Math.PI）から，現在の盤面の回転角度を引く
+    let pointerAngleOnWheel = (1.5 * Math.PI - startAngle) % (2 * Math.PI);
+    if (pointerAngleOnWheel < 0) pointerAngleOnWheel += 2 * Math.PI;
+
+    let winningItem = itemsData[0].text;
+    let cumulativeAngle = 0;
+
+    // ポインターの角度が，どの項目の角度の範囲内に収まっているかを判定
+    for (let i = 0; i < itemsData.length; i++) {
+        const itemArc = (Math.PI * 2) * (itemsData[i].weight / totalWeight);
+        cumulativeAngle += itemArc;
+        if (pointerAngleOnWheel <= cumulativeAngle) {
+            winningItem = itemsData[i].text;
+            break;
+        }
+    }
+
+    document.getElementById('result').innerText = "結果: " + winningItem;
 }
 
 document.getElementById('updateBtn').addEventListener('click', updateRouletteItems);
 
 document.getElementById('spinBtn').addEventListener('click', () => {
-    if (items.length <= 1 && items[0] === "項目なし") return;
+    if (itemsData.length <= 1 && itemsData[0].text === "項目なし") return;
     document.getElementById('result').innerText = "";
     spinAngleStart = Math.random() * 10 + 10;
     spinTime = 0;
