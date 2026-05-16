@@ -55,6 +55,30 @@ document.getElementById('langSelect').addEventListener('change', (e) => {
     updateProfileSelect(); // ドロップダウンの言語を更新
     updateRouletteItems(); // ルーレット盤面の言語を更新
 });
+// --- ダークモード (Theme) 設定 ---
+const themeToggleCheckbox = document.getElementById('themeToggleCheckbox');
+let isDarkMode = localStorage.getItem('myRouletteTheme') === 'dark';
+
+// モードを画面に反映する関数
+function applyTheme() {
+    if (isDarkMode) {
+        document.body.classList.add('dark-mode');
+        themeToggleCheckbox.checked = true;
+    } else {
+        document.body.classList.remove('dark-mode');
+        themeToggleCheckbox.checked = false;
+    }
+}
+
+// スイッチがクリックされたときの処理
+themeToggleCheckbox.addEventListener('change', (e) => {
+    isDarkMode = e.target.checked;
+    localStorage.setItem('myRouletteTheme', isDarkMode ? 'dark' : 'light'); // 状態を保存
+    applyTheme();
+});
+
+// 初期化（ページ読み込み時に実行）
+applyTheme();
 
 // 画面上のテキストを翻訳辞書から引っ張ってきて書き換える関数
 function applyLanguage() {
