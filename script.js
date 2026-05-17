@@ -102,7 +102,7 @@ function applyLanguage() {
 }
 
 
-// --- 以下のルーレットの仕組みは前回と同じですが，テキスト部分に変数「t」を使っています ---
+// --- ルーレットの仕組み ---
 let itemsData = []; 
 let totalWeight = 0;
 let startAngle = 0;
